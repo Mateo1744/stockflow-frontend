@@ -1,0 +1,3 @@
+import { Pencil, Power } from 'lucide-react'
+import { Button } from '../ui/button'
+export function RowActions({ onEdit, onDeactivate, canDeactivate = true }: { onEdit?: () => void; onDeactivate?: () => void; canDeactivate?: boolean }) { if (!onEdit && !onDeactivate) return <span className="text-xs text-slate-400">Solo lectura</span>; return <div className="flex justify-end gap-1">{onEdit && <Button variant="ghost" size="icon" aria-label="Editar" onClick={onEdit}><Pencil size={16} /></Button>}{onDeactivate && canDeactivate && <Button variant="ghost" size="icon" aria-label="Desactivar" onClick={onDeactivate}><Power size={16} /></Button>}</div> }

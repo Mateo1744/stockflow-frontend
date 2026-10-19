@@ -1,0 +1,13 @@
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { renderPage } from '../../test/render'
+import ProductsPage from './ProductsPage'
+import { productApi } from './product.api'
+import { categoryApi } from '../categories/category.api'
+const auth = vi.hoisted(() => ({ write: true }))
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ hasAnyRole: () => auth.write }) }))
+vi.mock('./product.api', async (original) => ({ ...(await original<typeof import('./product.api')>()), productApi: { list: vi.fn(), create: vi.fn(), update: vi.fn(), deactivate: vi.fn() } }))
+vi.mock('../categories/category.api', async (original) => ({ ...(await original<typeof import('../categories/category.api')>()), categoryApi: { list: vi.fn() } }))
+const page = { content: [{ id: 1, sku: 'SKU-1', name: 'Mouse', description: '', salePrice: 90000, active: true, categoryId: 2, categoryName: 'Accesorios', createdAt: '', updatedAt: '' }], page: 0, size: 10, totalElements: 1, totalPages: 1, first: true, last: true }
+describe('ProductsPage', () => { beforeEach(() => { auth.write = true; vi.mocked(productApi.list).mockResolvedValue(page); vi.mocked(categoryApi.list).mockResolvedValue([{ id: 2, name: 'Accesorios', description: '', active: true, createdAt: '', updatedAt: '' }]) }); it('renderiza listado y filtros', async () => { renderPage(<ProductsPage />, '/products'); expect(await screen.findByText('Mouse')).toBeInTheDocument(); expect(screen.getByLabelText('SKU')).toBeInTheDocument(); expect(screen.getByRole('cell', { name: 'Accesorios' })).toBeInTheDocument() }); it('SELLER no ve acciones de escritura', async () => { auth.write = false; renderPage(<ProductsPage />, '/products'); await screen.findByText('Mouse'); expect(screen.queryByRole('button', { name: /nuevo producto/i })).not.toBeInTheDocument(); expect(screen.queryByLabelText('Editar')).not.toBeInTheDocument() }); it('abre creación, edición y desactivación', async () => { renderPage(<ProductsPage />, '/products'); const user = userEvent.setup(); await screen.findByText('Mouse'); await user.click(screen.getByRole('button', { name: /nuevo producto/i })); expect(screen.getByRole('heading', { name: /nuevo producto/i })).toBeInTheDocument(); await user.click(screen.getByRole('button', { name: 'Cancelar' })); await user.click(screen.getByLabelText('Editar')); expect(screen.getByDisplayValue('Mouse')).toBeInTheDocument(); await user.click(screen.getByRole('button', { name: 'Cancelar' })); await user.click(screen.getByLabelText('Desactivar')); expect(screen.getByText(/conservará su historial/i)).toBeInTheDocument() }) })

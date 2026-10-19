@@ -1,0 +1,7 @@
+const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' })
+const date = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' })
+const dateTime = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
+export const formatCurrency = (value: number) => currency.format(value)
+export const formatDate = (value: string) => date.format(new Date(value))
+export const formatDateTime = (value: string) => dateTime.format(new Date(value))
+export const formatPersonName = (firstName: string, lastName: string) => `${firstName} ${lastName}`.trim()

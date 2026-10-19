@@ -1,22 +1,39 @@
+/* oxlint-disable react/only-export-components -- route-level lazy components belong with the router */
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
-import { AdminLayout } from '../components/layout/AdminLayout'
-import { routePermissions } from '../components/layout/navigation'
+import NotFoundPage from '../components/shared/NotFoundPage'
+import { LoadingState } from '../components/shared/LoadingState'
 import { PlaceholderPage } from '../components/shared/PlaceholderPage'
-import { LoginPage } from '../features/auth/LoginPage'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { RoleRoute } from '../features/auth/RoleRoute'
-import { DashboardPage } from '../features/dashboard/DashboardPage'
-
-const placeholders = [
-  ['/products', 'Productos', 'Catálogo y disponibilidad de productos.'], ['/categories', 'Categorías', 'Organización del catálogo de StockFlow.'], ['/suppliers', 'Proveedores', 'Relaciones y abastecimiento de inventario.'], ['/customers', 'Clientes', 'Información comercial de clientes.'], ['/inventory', 'Inventario', 'Existencias y estado general del stock.'], ['/inventory/movements', 'Movimientos', 'Trazabilidad de entradas y salidas.'], ['/stock-entries', 'Entradas', 'Recepción y registro de mercancía.'], ['/stock-exits', 'Salidas', 'Despachos y ajustes de inventario.'], ['/sales', 'Ventas', 'Gestión operativa de ventas.'], ['/reports', 'Reportes', 'Análisis disponible según tu perfil.'], ['/users', 'Usuarios', 'Administración de accesos y roles.'],
-] as const
-
+import type { Role } from '../types/api'
+const DashboardPage = lazy(() => import('../features/dashboard/DashboardPage'))
+const LoginPage = lazy(() => import('../features/auth/LoginPage').then((module) => ({ default: module.LoginPage })))
+const AdminLayout = lazy(() => import('../components/layout/AdminLayout').then((module) => ({ default: module.AdminLayout })))
+const ProductsPage = lazy(() => import('../features/products/ProductsPage'))
+const CategoriesPage = lazy(() => import('../features/categories/CategoriesPage'))
+const SuppliersPage = lazy(() => import('../features/suppliers/SuppliersPage'))
+const CustomersPage = lazy(() => import('../features/customers/CustomersPage'))
+const UsersPage = lazy(() => import('../features/users/UsersPage'))
+const loading = (node: ReactNode) => <Suspense fallback={<LoadingState label="Cargando módulo…" />}>{node}</Suspense>
+const roleRoute = (path: string, roles: Role[], element: ReactNode) => ({ element: <RoleRoute allowedRoles={roles} />, children: [{ path, element: loading(element) }] })
 export const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
-  { element: <ProtectedRoute />, children: [{ element: <AdminLayout />, children: [
+  { path: '/login', element: loading(<LoginPage />) },
+  { element: <ProtectedRoute />, children: [{ element: loading(<AdminLayout />), children: [
     { index: true, element: <Navigate to="/dashboard" replace /> },
-    { path: '/dashboard', element: <DashboardPage /> },
-    ...placeholders.map(([path, title, description]) => ({ element: <RoleRoute allowedRoles={routePermissions[path]} />, children: [{ path, element: <PlaceholderPage title={title} description={description} /> }] })),
+    { path: '/dashboard', element: loading(<DashboardPage />) },
+    roleRoute('/products', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <ProductsPage />),
+    roleRoute('/categories', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <CategoriesPage />),
+    roleRoute('/customers', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <CustomersPage />),
+    roleRoute('/suppliers', ['ADMIN', 'INVENTORY_MANAGER'], <SuppliersPage />),
+    roleRoute('/users', ['ADMIN'], <UsersPage />),
+    roleRoute('/inventory', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Inventario" description="Existencias y estado general del stock." />),
+    roleRoute('/inventory/movements', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Movimientos" description="Trazabilidad de entradas y salidas." />),
+    roleRoute('/stock-entries', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Entradas" description="Recepción y registro de mercancía." />),
+    roleRoute('/stock-exits', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Salidas" description="Despachos y ajustes de inventario." />),
+    roleRoute('/sales', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <PlaceholderPage title="Ventas" description="Gestión operativa de ventas." />),
+    roleRoute('/reports', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <PlaceholderPage title="Reportes" description="Análisis disponible según tu perfil." />),
+    { path: '*', element: <NotFoundPage /> },
   ] }] },
-  { path: '*', element: <Navigate to="/dashboard" replace /> },
+  { path: '*', element: <NotFoundPage /> },
 ])

@@ -1,0 +1,4 @@
+import type { FieldError, UseFormRegisterReturn } from 'react-hook-form'
+import { Input } from '../../components/ui/input'
+export function FormField({ label, error, registration, type = 'text', placeholder }: { label: string; error?: FieldError; registration: UseFormRegisterReturn; type?: string; placeholder?: string }) { const id = registration.name; return <label className="block text-sm font-medium" htmlFor={id}><span className="mb-1.5 block">{label}</span><Input id={id} type={type} placeholder={placeholder} aria-invalid={Boolean(error)} {...registration} />{error && <span className="mt-1 block text-xs text-red-600">{error.message}</span>}</label> }
+export function ActiveCheckbox({ registration }: { registration: UseFormRegisterReturn }) { return <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" className="size-4 accent-indigo-600" {...registration} />Activo</label> }

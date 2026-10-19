@@ -8,3 +8,17 @@ export interface LowStockItem { productId: number; sku: string; productName: str
 export type LowStockResponse = LowStockItem[]
 export interface SalesSummaryResponse { totalSales: number; totalRevenue: number; completedSales: number; cancelledSales: number; pendingSales: number }
 export interface InventorySummaryResponse { totalProducts: number; totalUnitsInStock: number; lowStockProducts: number }
+export interface PageFilters { page: number; size: number; sort?: string }
+export interface CategoryRequest { name: string; description: string; active: boolean }
+export interface CategoryResponse extends CategoryRequest { id: number; createdAt: string; updatedAt: string }
+export interface SupplierRequest { name: string; taxId: string; contactName: string; email: string; phone: string; address: string; active: boolean }
+export interface SupplierResponse extends SupplierRequest { id: number; createdAt: string; updatedAt: string }
+export interface CustomerRequest { documentNumber: string; firstName: string; lastName: string; email: string; phone: string; address: string; active: boolean }
+export interface CustomerResponse extends CustomerRequest { id: number; createdAt: string; updatedAt: string }
+export interface ProductRequest { sku: string; name: string; description: string; salePrice: number; active: boolean; categoryId: number }
+export interface ProductResponse extends ProductRequest { id: number; categoryName: string; createdAt: string; updatedAt: string }
+export interface UserCreateRequest { firstName: string; lastName: string; email: string; password: string; active: boolean; roleNames: Role[] }
+export interface UserUpdateRequest { firstName: string; lastName: string; email: string; active: boolean; roleNames: Role[] }
+export interface ProductFilters extends PageFilters { sku?: string; name?: string; active?: boolean; categoryId?: number }
+export interface SupplierFilters extends PageFilters { taxId?: string; name?: string; active?: boolean }
+export interface CustomerFilters extends PageFilters { documentNumber?: string; name?: string; active?: boolean }

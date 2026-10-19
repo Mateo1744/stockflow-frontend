@@ -9,7 +9,7 @@ export const navigation: NavItem[] = [
   { label: 'Dashboard', path: '/dashboard', icon: Gauge, roles: all },
   { label: 'Productos', path: '/products', icon: Package, roles: all },
   { label: 'Categorías', path: '/categories', icon: FolderTree, roles: all },
-  { label: 'Clientes', path: '/customers', icon: Contact, roles: ['ADMIN', 'SELLER'] },
+  { label: 'Clientes', path: '/customers', icon: Contact, roles: all },
   { label: 'Proveedores', path: '/suppliers', icon: Truck, roles: stock },
   { label: 'Inventario', path: '/inventory', icon: Boxes, roles: stock },
   { label: 'Movimientos', path: '/inventory/movements', icon: Repeat2, roles: stock },

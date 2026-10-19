@@ -1,0 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '../../components/ui/button'
+import type { CategoryRequest, CategoryResponse } from '../../types/api'
+import { ActiveCheckbox, FormField } from '../shared/FormFields'
+const schema = z.object({ name: z.string().trim().min(1, 'El nombre es obligatorio'), description: z.string(), active: z.boolean() })
+export function CategoryForm({ category, onSubmit, onCancel, loading, serverError }: { category?: CategoryResponse; onSubmit: (value: CategoryRequest) => void; onCancel: () => void; loading: boolean; serverError?: string }) { const { register, handleSubmit, formState: { errors } } = useForm<CategoryRequest>({ resolver: zodResolver(schema), defaultValues: category ?? { name: '', description: '', active: true } }); return <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}><FormField label="Nombre" registration={register('name')} error={errors.name} /><label className="block text-sm font-medium"><span className="mb-1.5 block">Descripción</span><textarea className="min-h-24 w-full rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900" {...register('description')} /></label><ActiveCheckbox registration={register('active')} />{serverError && <p role="alert" className="text-sm text-red-600">{serverError}</p>}<div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button><Button disabled={loading}>{loading ? 'Guardando…' : 'Guardar categoría'}</Button></div></form> }

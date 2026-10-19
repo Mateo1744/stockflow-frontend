@@ -1,6 +1,6 @@
 # StockFlow Frontend
 
-Aplicación administrativa para operar StockFlow: inventario, ventas, productos, categorías, proveedores, clientes, movimientos, reportes y usuarios. Esta primera fase entrega la base de autenticación, autorización, navegación y dashboard; los CRUD se incorporarán posteriormente.
+Aplicación administrativa para operar StockFlow. Incluye autenticación, autorización, dashboard y los CRUD administrativos de productos, categorías, proveedores, clientes y usuarios.
 
 ## Stack
 
@@ -60,6 +60,11 @@ src/
   features/
     auth/              sesión, login y guards
     dashboard/         resumen por permisos
+    products/          catálogo, filtros y mantenimiento
+    categories/        clasificación de productos
+    suppliers/         proveedores paginados
+    customers/         clientes paginados
+    users/             usuarios y roles
     reports/           acceso a reportes
   hooks/               hooks compartidos
   lib/
@@ -88,3 +93,13 @@ El dashboard consulta únicamente endpoints permitidos por el rol. La autorizaci
 - `SELLER`: productos, categorías, clientes, ventas y reportes.
 
 La matriz está alineada con `SecurityConfig` del backend. Ocultar módulos mejora la experiencia; cada petición continúa validándose en la API.
+
+## Módulos administrativos
+
+- Productos: búsqueda por SKU/nombre, categoría, estado, orden y paginación.
+- Categorías: listado, creación, edición y desactivación.
+- Proveedores: filtros por Tax ID, nombre y estado, con paginación.
+- Clientes: filtros por documento, nombre y estado, con permisos diferenciados.
+- Usuarios: administración de datos, estado y roles; la contraseña solo existe durante la creación.
+
+Los filtros paginados se conservan en la URL. Las rutas principales usan lazy loading para generar chunks independientes. Inventario, movimientos, entradas, salidas y ventas conservan páginas preparadas, pero sus operaciones todavía no forman parte del frontend.
