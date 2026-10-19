@@ -1,0 +1,2 @@
+import type { LoginResponse, Role } from '../types/api'
+export function sessionFor(role: Role): LoginResponse { return { token: 'jwt-test', tokenType: 'Bearer', expiresIn: 3600, user: { id: 1, firstName: 'Mateo', lastName: 'StockFlow', email: 'user@stockflow.co', active: true, roles: [{ id: 1, name: role, description: role }], createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' } } }

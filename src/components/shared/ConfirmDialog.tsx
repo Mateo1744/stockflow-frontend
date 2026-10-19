@@ -1,0 +1,3 @@
+import { Button } from '../ui/button'
+import { Dialog, DialogContent } from '../ui/dialog'
+export function ConfirmDialog({ open, onOpenChange, title, description, onConfirm, loading = false }: { open: boolean; onOpenChange: (open: boolean) => void; title: string; description: string; onConfirm: () => void; loading?: boolean }) { return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent title={title} description={description}><div className="flex justify-end gap-3"><Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button><Button variant="danger" disabled={loading} onClick={onConfirm}>{loading ? 'Procesando…' : 'Confirmar'}</Button></div></DialogContent></Dialog> }

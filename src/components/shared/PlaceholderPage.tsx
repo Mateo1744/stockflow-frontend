@@ -1,0 +1,4 @@
+import { Construction } from 'lucide-react'
+import { PageHeader } from './PageHeader'
+import { Card, CardContent } from '../ui/card'
+export function PlaceholderPage({ title, description }: { title: string; description: string }) { return <div className="space-y-7"><PageHeader title={title} description={description} /><Card><CardContent className="grid min-h-72 place-items-center text-center"><div className="max-w-md"><span className="mx-auto mb-5 grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-indigo-950"><Construction /></span><h2 className="text-lg font-semibold">Módulo preparado</h2><p className="mt-2 text-sm leading-6 text-slate-500">La navegación, permisos y estructura están listos. Las operaciones del módulo se incorporarán en la siguiente fase.</p></div></CardContent></Card></div> }

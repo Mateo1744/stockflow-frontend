@@ -1,0 +1,2 @@
+import { PackageOpen } from 'lucide-react'
+export function EmptyState({ title = 'Sin información', description = 'No hay registros para mostrar por ahora.' }: { title?: string; description?: string }) { return <div className="grid min-h-40 place-items-center rounded-xl border border-dashed border-slate-300 p-6 text-center dark:border-slate-700"><div><PackageOpen className="mx-auto mb-3 text-slate-400" aria-hidden="true" /><h3 className="font-semibold">{title}</h3><p className="mt-1 text-sm text-slate-500">{description}</p></div></div> }

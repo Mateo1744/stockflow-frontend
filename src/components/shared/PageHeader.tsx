@@ -1,0 +1,2 @@
+import type { ReactNode } from 'react'
+export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) { return <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="mb-1 text-xs font-semibold uppercase tracking-[.18em] text-brand-600">StockFlow</p><h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>{description && <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">{description}</p>}</div>{actions}</header> }

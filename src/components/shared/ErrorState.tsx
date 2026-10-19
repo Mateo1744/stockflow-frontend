@@ -1,0 +1,3 @@
+import { CircleAlert } from 'lucide-react'
+import { Button } from '../ui/button'
+export function ErrorState({ title = 'No pudimos cargar la información', message = 'Inténtalo nuevamente en unos momentos.', onRetry }: { title?: string; message?: string; onRetry?: () => void }) { return <div className="grid min-h-48 place-items-center rounded-2xl border border-red-200 bg-red-50/70 p-6 text-center dark:border-red-900 dark:bg-red-950/20"><div><CircleAlert className="mx-auto mb-3 text-red-500" aria-hidden="true" /><h2 className="font-semibold">{title}</h2><p className="mt-1 text-sm text-slate-500">{message}</p>{onRetry && <Button className="mt-4" variant="outline" onClick={onRetry}>Reintentar</Button>}</div></div> }
