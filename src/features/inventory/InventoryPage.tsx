@@ -1,0 +1,10 @@
+import { useQuery } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { StatusBadge } from '../../components/shared/Badges'
+import { DataTable, type Column } from '../../components/shared/DataTable'
+import { PageHeader } from '../../components/shared/PageHeader'
+import { SearchInput } from '../../components/shared/Filters'
+import { formatDateTime } from '../../lib/utils/formatters'
+import type { InventoryResponse } from '../../types/api'
+import { inventoryApi, inventoryKeys } from './inventory.api'
+export default function InventoryPage() { const [search, setSearch] = useState(''); const query = useQuery({ queryKey: inventoryKeys.all, queryFn: inventoryApi.list }); const rows = useMemo(() => (query.data ?? []).filter((item) => `${item.productSku} ${item.productName}`.toLowerCase().includes(search.toLowerCase())), [query.data, search]); const columns: Column<InventoryResponse>[] = [{ key: 'product', header: 'Producto', cell: (r) => <div><b>{r.productName}</b><p className="font-mono text-xs text-slate-500">{r.productSku}</p></div> }, { key: 'stock', header: 'Stock actual', cell: (r) => r.currentStock }, { key: 'minimum', header: 'Stock mínimo', cell: (r) => r.minimumStock }, { key: 'state', header: 'Estado', cell: (r) => <StatusBadge status={r.currentStock <= r.minimumStock ? 'Stock bajo' : 'Disponible'} /> }, { key: 'updated', header: 'Actualización', cell: (r) => formatDateTime(r.updatedAt) }]; return <div className="space-y-6"><PageHeader title="Inventario" description="Consulta de existencias. El stock se modifica únicamente mediante operaciones confirmadas." /><div className="max-w-md"><SearchInput label="Buscar producto" value={search} onChange={setSearch} placeholder="SKU o nombre" /></div><DataTable columns={columns} rows={rows} rowKey={(r) => r.id} loading={query.isLoading} error={query.isError} onRetry={() => void query.refetch()} emptyTitle="Sin existencias" /></div> }

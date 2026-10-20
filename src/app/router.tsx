@@ -15,6 +15,17 @@ const CategoriesPage = lazy(() => import('../features/categories/CategoriesPage'
 const SuppliersPage = lazy(() => import('../features/suppliers/SuppliersPage'))
 const CustomersPage = lazy(() => import('../features/customers/CustomersPage'))
 const UsersPage = lazy(() => import('../features/users/UsersPage'))
+const InventoryPage = lazy(() => import('../features/inventory/InventoryPage'))
+const InventoryMovementsPage = lazy(() => import('../features/inventory-movements/InventoryMovementsPage'))
+const StockEntriesPage = lazy(() => import('../features/stock-entries/StockEntriesPage'))
+const NewStockEntryPage = lazy(() => import('../features/stock-entries/NewStockEntryPage'))
+const StockEntryDetailPage = lazy(() => import('../features/stock-entries/StockEntryDetailPage'))
+const StockExitsPage = lazy(() => import('../features/stock-exits/StockExitsPage'))
+const NewStockExitPage = lazy(() => import('../features/stock-exits/NewStockExitPage'))
+const StockExitDetailPage = lazy(() => import('../features/stock-exits/StockExitDetailPage'))
+const SalesPage = lazy(() => import('../features/sales/SalesPage'))
+const NewSalePage = lazy(() => import('../features/sales/NewSalePage'))
+const SaleDetailPage = lazy(() => import('../features/sales/SaleDetailPage'))
 const loading = (node: ReactNode) => <Suspense fallback={<LoadingState label="Cargando módulo…" />}>{node}</Suspense>
 const roleRoute = (path: string, roles: Role[], element: ReactNode) => ({ element: <RoleRoute allowedRoles={roles} />, children: [{ path, element: loading(element) }] })
 export const router = createBrowserRouter([
@@ -27,11 +38,17 @@ export const router = createBrowserRouter([
     roleRoute('/customers', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <CustomersPage />),
     roleRoute('/suppliers', ['ADMIN', 'INVENTORY_MANAGER'], <SuppliersPage />),
     roleRoute('/users', ['ADMIN'], <UsersPage />),
-    roleRoute('/inventory', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Inventario" description="Existencias y estado general del stock." />),
-    roleRoute('/inventory/movements', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Movimientos" description="Trazabilidad de entradas y salidas." />),
-    roleRoute('/stock-entries', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Entradas" description="Recepción y registro de mercancía." />),
-    roleRoute('/stock-exits', ['ADMIN', 'INVENTORY_MANAGER'], <PlaceholderPage title="Salidas" description="Despachos y ajustes de inventario." />),
-    roleRoute('/sales', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <PlaceholderPage title="Ventas" description="Gestión operativa de ventas." />),
+    roleRoute('/inventory', ['ADMIN', 'INVENTORY_MANAGER'], <InventoryPage />),
+    roleRoute('/inventory/movements', ['ADMIN', 'INVENTORY_MANAGER'], <InventoryMovementsPage />),
+    roleRoute('/stock-entries', ['ADMIN', 'INVENTORY_MANAGER'], <StockEntriesPage />),
+    roleRoute('/stock-entries/new', ['ADMIN', 'INVENTORY_MANAGER'], <NewStockEntryPage />),
+    roleRoute('/stock-entries/:id', ['ADMIN', 'INVENTORY_MANAGER'], <StockEntryDetailPage />),
+    roleRoute('/stock-exits', ['ADMIN', 'INVENTORY_MANAGER'], <StockExitsPage />),
+    roleRoute('/stock-exits/new', ['ADMIN', 'INVENTORY_MANAGER'], <NewStockExitPage />),
+    roleRoute('/stock-exits/:id', ['ADMIN', 'INVENTORY_MANAGER'], <StockExitDetailPage />),
+    roleRoute('/sales', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <SalesPage />),
+    roleRoute('/sales/new', ['ADMIN', 'SELLER'], <NewSalePage />),
+    roleRoute('/sales/:id', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <SaleDetailPage />),
     roleRoute('/reports', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <PlaceholderPage title="Reportes" description="Análisis disponible según tu perfil." />),
     { path: '*', element: <NotFoundPage /> },
   ] }] },

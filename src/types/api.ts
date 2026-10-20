@@ -22,3 +22,26 @@ export interface UserUpdateRequest { firstName: string; lastName: string; email:
 export interface ProductFilters extends PageFilters { sku?: string; name?: string; active?: boolean; categoryId?: number }
 export interface SupplierFilters extends PageFilters { taxId?: string; name?: string; active?: boolean }
 export interface CustomerFilters extends PageFilters { documentNumber?: string; name?: string; active?: boolean }
+export type MovementType = 'ENTRY' | 'EXIT' | 'ADJUSTMENT'
+export interface InventoryResponse { id: number; productId: number; productSku: string; productName: string; currentStock: number; minimumStock: number; updatedAt: string }
+export interface InventoryMovementResponse { id: number; inventoryId: number; productId: number; productSku: string; productName: string; type: MovementType; quantity: number; previousStock: number; resultingStock: number; performedById: number; performedByFirstName: string; performedByLastName: string; performedByEmail: string; notes: string | null; createdAt: string }
+export interface MovementFilters extends PageFilters { productId?: number; type?: MovementType; performedById?: number }
+export type StockEntryStatus = 'DRAFT' | 'CONFIRMED' | 'CANCELLED'
+export interface StockEntryItemRequest { productId: number; quantity: number; unitCost: number }
+export interface StockEntryRequest { supplierId: number; referenceNumber: string; notes: string; items: StockEntryItemRequest[] }
+export interface StockEntryItemResponse extends StockEntryItemRequest { id: number; productSku: string; productName: string; subtotal: number }
+export interface StockEntryResponse { id: number; referenceNumber: string | null; status: StockEntryStatus; supplierId: number; supplierName: string; receivedById: number; receivedByFirstName: string; receivedByLastName: string; receivedByEmail: string; totalCost: number; notes: string | null; items: StockEntryItemResponse[]; createdAt: string; updatedAt: string; confirmedAt: string | null }
+export interface StockEntryFilters extends PageFilters { status?: StockEntryStatus; supplierId?: number; referenceNumber?: string }
+export type StockExitStatus = 'DRAFT' | 'CONFIRMED' | 'CANCELLED'
+export type StockExitReason = 'DAMAGED' | 'LOSS' | 'INTERNAL_USE' | 'ADJUSTMENT' | 'OTHER'
+export interface StockExitItemRequest { productId: number; quantity: number }
+export interface StockExitRequest { reason: StockExitReason; notes: string; items: StockExitItemRequest[] }
+export interface StockExitItemResponse extends StockExitItemRequest { id: number; productSku: string; productName: string }
+export interface StockExitResponse { id: number; exitNumber: string; reason: StockExitReason; status: StockExitStatus; performedById: number; performedByFirstName: string; performedByLastName: string; performedByEmail: string; notes: string | null; items: StockExitItemResponse[]; createdAt: string; updatedAt: string; confirmedAt: string | null }
+export interface StockExitFilters extends PageFilters { status?: StockExitStatus; reason?: StockExitReason }
+export type SaleStatus = 'PENDING' | 'COMPLETED' | 'CANCELLED'
+export interface SaleItemRequest { productId: number; quantity: number }
+export interface SaleRequest { customerId?: number; items: SaleItemRequest[] }
+export interface SaleItemResponse extends SaleItemRequest { id: number; productSku: string; productName: string; unitPrice: number; subtotal: number }
+export interface SaleResponse { id: number; saleNumber: string; status: SaleStatus; customerId: number | null; customerDocumentNumber: string | null; customerFirstName: string | null; customerLastName: string | null; customerEmail: string | null; sellerId: number; sellerFirstName: string; sellerLastName: string; sellerEmail: string; totalAmount: number; items: SaleItemResponse[]; createdAt: string; updatedAt: string }
+export interface SaleFilters extends PageFilters { saleNumber?: string; status?: SaleStatus; customerId?: number; sellerId?: number; from?: string; to?: string }

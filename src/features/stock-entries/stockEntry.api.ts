@@ -1,0 +1,5 @@
+import { apiClient } from '../../lib/api/client'
+import { cleanParams } from '../../lib/api/params'
+import type { PageResponse, StockEntryFilters, StockEntryRequest, StockEntryResponse } from '../../types/api'
+export const stockEntryApi = { async list(filters: StockEntryFilters) { return (await apiClient.get<PageResponse<StockEntryResponse>>('/api/stock-entries', { params: cleanParams(filters) })).data }, async detail(id: number) { return (await apiClient.get<StockEntryResponse>(`/api/stock-entries/${id}`)).data }, async create(body: StockEntryRequest) { return (await apiClient.post<StockEntryResponse>('/api/stock-entries', body)).data }, async confirm(id: number) { return (await apiClient.post<StockEntryResponse>(`/api/stock-entries/${id}/confirm`)).data }, async cancel(id: number) { return (await apiClient.post<StockEntryResponse>(`/api/stock-entries/${id}/cancel`)).data } }
+export const stockEntryKeys = { all: ['stock-entries'] as const, list: (filters: StockEntryFilters) => ['stock-entries', 'list', filters] as const, detail: (id: number) => ['stock-entries', id] as const }

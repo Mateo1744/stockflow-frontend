@@ -1,1 +1,1 @@
-export function cleanParams<T extends object>(params: T) { return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== '')) }
+export function cleanParams<T extends object>(params: T) { return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, (key === 'from' || key === 'to') && typeof value === 'string' && !value.endsWith('Z') ? new Date(value).toISOString() : value])) }

@@ -1,0 +1,5 @@
+import { apiClient } from '../../lib/api/client'
+import { cleanParams } from '../../lib/api/params'
+import type { PageResponse, StockExitFilters, StockExitRequest, StockExitResponse } from '../../types/api'
+export const stockExitApi = { async list(filters: StockExitFilters) { return (await apiClient.get<PageResponse<StockExitResponse>>('/api/stock-exits', { params: cleanParams(filters) })).data }, async detail(id: number) { return (await apiClient.get<StockExitResponse>(`/api/stock-exits/${id}`)).data }, async create(body: StockExitRequest) { return (await apiClient.post<StockExitResponse>('/api/stock-exits', body)).data }, async confirm(id: number) { return (await apiClient.post<StockExitResponse>(`/api/stock-exits/${id}/confirm`)).data }, async cancel(id: number) { return (await apiClient.post<StockExitResponse>(`/api/stock-exits/${id}/cancel`)).data } }
+export const stockExitKeys = { all: ['stock-exits'] as const, list: (filters: StockExitFilters) => ['stock-exits', 'list', filters] as const, detail: (id: number) => ['stock-exits', id] as const }

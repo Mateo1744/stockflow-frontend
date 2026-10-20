@@ -102,4 +102,14 @@ La matriz está alineada con `SecurityConfig` del backend. Ocultar módulos mejo
 - Clientes: filtros por documento, nombre y estado, con permisos diferenciados.
 - Usuarios: administración de datos, estado y roles; la contraseña solo existe durante la creación.
 
-Los filtros paginados se conservan en la URL. Las rutas principales usan lazy loading para generar chunks independientes. Inventario, movimientos, entradas, salidas y ventas conservan páginas preparadas, pero sus operaciones todavía no forman parte del frontend.
+Los filtros paginados se conservan en la URL y las rutas principales usan lazy loading para generar chunks independientes.
+
+## Operación de inventario y ventas
+
+- Inventario: consulta de stock actual, mínimos y alertas de stock bajo; no permite ajustes directos.
+- Movimientos: trazabilidad paginada de entradas, salidas y ajustes.
+- Entradas: creación en borrador, confirmación que incrementa existencias y cancelación sin impacto.
+- Salidas: creación en borrador por motivo, confirmación que descuenta existencias y cancelación.
+- Ventas: creación pendiente, completado que descuenta inventario y cancelación. El backend determina precios y totales.
+
+`ADMIN` opera todos los flujos; `INVENTORY_MANAGER` opera entradas y salidas y consulta ventas; `SELLER` crea y procesa ventas. Las transiciones confirmadas invalidan inventario, movimientos y reportes relacionados sin polling.
