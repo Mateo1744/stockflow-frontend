@@ -13,7 +13,7 @@ const number = new Intl.NumberFormat('es-CO')
 const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })
 export function DashboardPage() {
   const { hasAnyRole } = useAuth(); const canSales = hasAnyRole(['ADMIN', 'SELLER']); const canInventory = hasAnyRole(['ADMIN', 'INVENTORY_MANAGER'])
-  const sales = useQuery({ queryKey: ['reports', 'sales-summary'], queryFn: reportApi.getSalesSummary, enabled: canSales })
+  const sales = useQuery({ queryKey: ['reports', 'sales-summary'], queryFn: () => reportApi.getSalesSummary(), enabled: canSales })
   const inventory = useQuery({ queryKey: ['reports', 'inventory-summary'], queryFn: reportApi.getInventorySummary, enabled: canInventory })
   const lowStock = useQuery({ queryKey: ['reports', 'low-stock'], queryFn: reportApi.getLowStock, enabled: canInventory })
   const queries = [...(canSales ? [sales] : []), ...(canInventory ? [inventory, lowStock] : [])]; const hasError = queries.some((query) => query.isError)

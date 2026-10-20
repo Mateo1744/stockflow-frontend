@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, Contact, FolderTree, Gauge, Package, PackageMinus, PackagePlus, Repeat2, ShoppingCart, Truck, Users } from 'lucide-react'
+import { BarChart3, Boxes, Contact, FolderTree, Gauge, Package, PackageMinus, PackagePlus, Repeat2, ShoppingCart, Truck, UserRound, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { Role } from '../../types/api'
 export interface NavItem { label: string; path: string; icon: LucideIcon; roles: readonly Role[] }
@@ -18,6 +18,7 @@ export const navigation: NavItem[] = [
   { label: 'Ventas', path: '/sales', icon: ShoppingCart, roles: sales },
   { label: 'Reportes', path: '/reports', icon: BarChart3, roles: all },
   { label: 'Usuarios', path: '/users', icon: Users, roles: ['ADMIN'] },
+  { label: 'Mi perfil', path: '/profile', icon: UserRound, roles: all },
 ]
 export const routePermissions: Record<string, readonly Role[]> = Object.fromEntries(navigation.map((item) => [item.path, item.roles]))
 export const routeTitles: Record<string, string> = Object.fromEntries(navigation.map((item) => [item.path, item.label]))

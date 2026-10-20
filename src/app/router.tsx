@@ -3,7 +3,6 @@ import { lazy, Suspense, type ReactNode } from 'react'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import NotFoundPage from '../components/shared/NotFoundPage'
 import { LoadingState } from '../components/shared/LoadingState'
-import { PlaceholderPage } from '../components/shared/PlaceholderPage'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { RoleRoute } from '../features/auth/RoleRoute'
 import type { Role } from '../types/api'
@@ -26,6 +25,8 @@ const StockExitDetailPage = lazy(() => import('../features/stock-exits/StockExit
 const SalesPage = lazy(() => import('../features/sales/SalesPage'))
 const NewSalePage = lazy(() => import('../features/sales/NewSalePage'))
 const SaleDetailPage = lazy(() => import('../features/sales/SaleDetailPage'))
+const ProfilePage = lazy(() => import('../features/profile/ProfilePage'))
+const ReportsPage = lazy(() => import('../features/reports/ReportsPage'))
 const loading = (node: ReactNode) => <Suspense fallback={<LoadingState label="Cargando módulo…" />}>{node}</Suspense>
 const roleRoute = (path: string, roles: Role[], element: ReactNode) => ({ element: <RoleRoute allowedRoles={roles} />, children: [{ path, element: loading(element) }] })
 export const router = createBrowserRouter([
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
   { element: <ProtectedRoute />, children: [{ element: loading(<AdminLayout />), children: [
     { index: true, element: <Navigate to="/dashboard" replace /> },
     { path: '/dashboard', element: loading(<DashboardPage />) },
+    { path: '/profile', element: loading(<ProfilePage />) },
     roleRoute('/products', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <ProductsPage />),
     roleRoute('/categories', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <CategoriesPage />),
     roleRoute('/customers', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <CustomersPage />),
@@ -49,7 +51,7 @@ export const router = createBrowserRouter([
     roleRoute('/sales', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <SalesPage />),
     roleRoute('/sales/new', ['ADMIN', 'SELLER'], <NewSalePage />),
     roleRoute('/sales/:id', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <SaleDetailPage />),
-    roleRoute('/reports', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <PlaceholderPage title="Reportes" description="Análisis disponible según tu perfil." />),
+    roleRoute('/reports', ['ADMIN', 'INVENTORY_MANAGER', 'SELLER'], <ReportsPage />),
     { path: '*', element: <NotFoundPage /> },
   ] }] },
   { path: '*', element: <NotFoundPage /> },

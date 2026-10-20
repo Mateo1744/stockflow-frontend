@@ -1,115 +1,116 @@
 # StockFlow Frontend
 
-Aplicación administrativa para operar StockFlow. Incluye autenticación, autorización, dashboard y los CRUD administrativos de productos, categorías, proveedores, clientes y usuarios.
+Aplicación SaaS administrativa para operar StockFlow de extremo a extremo: autenticación por roles, catálogos, inventario trazable, entradas, salidas, ventas, dashboard y reportes. Este repositorio contiene el cliente web; la API Spring Boot es la autoridad de seguridad y negocio.
+
+## Capturas
+
+La guía para capturas reales está en [`docs/screenshots`](docs/screenshots/README.md). No se incluyen mockups presentados como datos reales.
 
 ## Stack
 
 - React 19, TypeScript 7 y Vite 8
-- React Router
-- TanStack Query y Axios
+- React Router, TanStack Query y Axios
 - React Hook Form y Zod
-- Tailwind CSS 4 y componentes locales con patrón shadcn/ui
+- Tailwind CSS 4 y primitivas estilo shadcn/ui
 - Lucide React, Recharts y Sonner
 - Vitest, Testing Library y jsdom
 
-## Requisitos
+## Funcionalidades
 
-- Node.js 24 o compatible con Vite 8
-- npm 11+
-- StockFlow API disponible
+- Login JWT, sesión persistida, logout, guards y autorización por rol.
+- Perfil seguro derivado de la sesión, sin exponer token ni credenciales.
+- CRUD de productos, categorías, proveedores, clientes y usuarios.
+- Inventario de solo lectura y trazabilidad de movimientos.
+- Entradas y salidas con borrador, confirmación y cancelación.
+- Ventas pendientes, completadas o canceladas; la API determina precios y stock.
+- Dashboard y reportes reales por rol, incluido filtro temporal soportado por ventas.
+- Filtros, paginación, estados de carga/error/vacío, tema oscuro y diseño responsive.
+
+## Roles
+
+- `ADMIN`: operación y reportes completos.
+- `INVENTORY_MANAGER`: catálogos de inventario, proveedores, existencias, movimientos, entradas/salidas y lectura de ventas.
+- `SELLER`: productos/categorías, clientes, ventas y reporte de ventas.
+
+La interfaz aplica permisos en rutas y acciones, pero cada petición sigue siendo validada por la API.
 
 ## Instalación
 
+Requiere Node.js 22+ y una instancia de StockFlow API.
+
 ```bash
-npm install
+npm ci
 cp .env.example .env
 npm run dev
 ```
 
-En PowerShell puedes crear el archivo local con `Copy-Item .env.example .env`.
+En PowerShell: `Copy-Item .env.example .env`.
 
-## Variables de entorno
+## Variables
 
 ```env
 VITE_API_URL=http://localhost:8080
 ```
 
-El JWT no se configura como variable. Se recibe desde `POST /api/auth/login` y la sesión se administra de forma encapsulada en el frontend.
+No se incluyen JWT, contraseñas ni secretos en variables del frontend. Para desarrollo desde `http://localhost:5173`, el backend debe permitir exactamente ese origen mediante CORS. Para la imagen Docker expuesta en el ejemplo, debe permitir `http://localhost:3000`.
 
-## Scripts
+## Scripts y calidad
 
 ```bash
 npm run dev
+npx tsc -b
 npm run lint
 npm run test
-npm run build
-npm run preview
+npx vite build --configLoader native
 ```
 
-En entornos Windows con restricciones de procesos, valida con `npx vite build --configLoader native`.
+El loader nativo se recomienda en Windows cuando Vite devuelve `spawn EPERM`. GitHub Actions ejecuta instalación reproducible, TypeScript, lint, tests y build.
 
-## Estructura
+## Arquitectura
 
 ```text
 src/
-  app/                 composición, providers y router
+  app/                    providers y rutas lazy
   components/
-    layout/            shell administrativo
-    shared/            componentes transversales
-    ui/                primitivas de interfaz
+    layout/               shell administrativo responsive
+    shared/               estados, tablas, diálogos y pickers
+    ui/                   primitivas visuales
   features/
-    auth/              sesión, login y guards
-    dashboard/         resumen por permisos
-    products/          catálogo, filtros y mantenimiento
-    categories/        clasificación de productos
-    suppliers/         proveedores paginados
-    customers/         clientes paginados
-    users/             usuarios y roles
-    reports/           acceso a reportes
-  hooks/               hooks compartidos
+    auth/ dashboard/ profile/ reports/
+    products/ categories/ suppliers/ customers/ users/
+    inventory/ inventory-movements/
+    stock-entries/ stock-exits/ sales/
   lib/
-    api/               cliente HTTP y errores
-    auth/              storage y roles
-    utils/             utilidades
-  test/                configuración de pruebas
-  types/               contratos TypeScript
+    api/                  cliente Axios y errores normalizados
+    auth/                 sesión y roles encapsulados
+    utils/                formatos y utilidades
+  types/                  contratos de la API
 ```
 
-## Conexión con el backend
+Cada dominio conserva sus API y query keys. TanStack Query invalida únicamente inventario, movimientos, documentos y reportes relacionados después de una operación. Los importes de formularios son ayudas visuales; el backend calcula el valor definitivo.
 
-El cliente Axios usa `VITE_API_URL` y agrega `Authorization: Bearer <token>` cuando existe una sesión. Los errores HTTP comunes se convierten a mensajes seguros para el usuario. Los endpoints implementados en esta fase son:
+## Docker
 
-- `POST /api/auth/login`
-- `GET /api/reports/low-stock`
-- `GET /api/reports/sales-summary`
-- `GET /api/reports/inventory-summary`
+La imagen multi-stage compila con Node 22 y sirve `dist` desde Nginx con fallback SPA y caché inmutable para assets:
 
-El dashboard consulta únicamente endpoints permitidos por el rol. La autorización del frontend mejora la experiencia, pero la API sigue siendo la autoridad de seguridad.
+```bash
+docker build --build-arg VITE_API_URL=http://localhost:8080 -t stockflow-frontend .
+docker run --rm -p 3000:80 stockflow-frontend
+```
 
-## Roles
+`compose.full-stack.yml` supone que el backend está en `../stockflow-api`. Define `POSTGRES_PASSWORD` y `JWT_SECRET` en el entorno:
 
-- `ADMIN`: acceso a todos los módulos preparados.
-- `INVENTORY_MANAGER`: productos, categorías, proveedores, inventario, movimientos, entradas, salidas, lectura de ventas y reportes de inventario.
-- `SELLER`: productos, categorías, clientes, ventas y reportes.
+```bash
+docker compose -f compose.full-stack.yml up --build
+```
 
-La matriz está alineada con `SecurityConfig` del backend. Ocultar módulos mejora la experiencia; cada petición continúa validándose en la API.
+Servicios: PostgreSQL, StockFlow API en `:8080` y frontend en `:3000`.
 
-## Módulos administrativos
+## Conexión y decisiones
 
-- Productos: búsqueda por SKU/nombre, categoría, estado, orden y paginación.
-- Categorías: listado, creación, edición y desactivación.
-- Proveedores: filtros por Tax ID, nombre y estado, con paginación.
-- Clientes: filtros por documento, nombre y estado, con permisos diferenciados.
-- Usuarios: administración de datos, estado y roles; la contraseña solo existe durante la creación.
+Axios central usa `VITE_API_URL`, adjunta el token desde storage encapsulado y convierte 401/403/404/409/500/503 en mensajes seguros. Un 401 limpia la sesión. `/profile` usa el usuario de `LoginResponse`; no inventa `/me`.
 
-Los filtros paginados se conservan en la URL y las rutas principales usan lazy loading para generar chunks independientes.
-
-## Operación de inventario y ventas
-
-- Inventario: consulta de stock actual, mínimos y alertas de stock bajo; no permite ajustes directos.
-- Movimientos: trazabilidad paginada de entradas, salidas y ajustes.
-- Entradas: creación en borrador, confirmación que incrementa existencias y cancelación sin impacto.
-- Salidas: creación en borrador por motivo, confirmación que descuenta existencias y cancelación.
-- Ventas: creación pendiente, completado que descuenta inventario y cancelación. El backend determina precios y totales.
-
-`ADMIN` opera todos los flujos; `INVENTORY_MANAGER` opera entradas y salidas y consulta ventas; `SELLER` crea y procesa ventas. Las transiciones confirmadas invalidan inventario, movimientos y reportes relacionados sin polling.
+- Lazy loading por módulo, sin fragmentar componentes pequeños.
+- Sin refresh token, proxy permanente ni reglas de negocio duplicadas.
+- Los E2E quedan para un entorno efímero con CORS y datos semilla controlados.
+- Futuro: refresh token cuando exista contrato, devoluciones/reversiones, capturas reales y despliegue automatizado.

@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stockflow}
+      POSTGRES_USER: ${POSTGRES_USER:-stockflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD}
+    volumes:
+      - stockflow-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  stockflow-api:
+    build: ../stockflow-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-stockflow}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-stockflow}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  stockflow-frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    depends_on:
+      - stockflow-api
+    ports:
+      - "3000:80"
+
+volumes:
+  stockflow-data:
