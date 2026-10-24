@@ -2,6 +2,10 @@
 
 Aplicación SaaS administrativa para operar StockFlow de extremo a extremo: autenticación por roles, catálogos, inventario trazable, entradas, salidas, ventas, dashboard y reportes. Este repositorio contiene el cliente web; la API Spring Boot es la autoridad de seguridad y negocio.
 
+## Backend
+
+El backend oficial es [Mateo1744/stockflow-api](https://github.com/Mateo1744/stockflow-api). Su URL se configura en build time mediante `VITE_API_URL`.
+
 ## Capturas
 
 La guía para capturas reales está en [`docs/screenshots`](docs/screenshots/README.md). No se incluyen mockups presentados como datos reales.
@@ -98,13 +102,22 @@ docker build --build-arg VITE_API_URL=http://localhost:8080 -t stockflow-fronten
 docker run --rm -p 3000:80 stockflow-frontend
 ```
 
-`compose.full-stack.yml` supone que el backend está en `../stockflow-api`. Define `POSTGRES_PASSWORD` y `JWT_SECRET` en el entorno:
+`compose.full-stack.yml` supone que el backend está en `../stockflow-api`. `VITE_API_URL` debe ser una URL accesible por el navegador, no el hostname interno de Docker. Define los secretos y el bootstrap solo en el entorno local:
 
-```bash
-docker compose -f compose.full-stack.yml up --build
+```powershell
+$env:POSTGRES_PASSWORD = '<local-only>'
+$env:JWT_SECRET = '<base64-secret-of-at-least-32-bytes>'
+$env:STOCKFLOW_BOOTSTRAP_ADMIN_ENABLED = 'true'
+$env:STOCKFLOW_BOOTSTRAP_ADMIN_EMAIL = 'admin@example.com'
+$env:STOCKFLOW_BOOTSTRAP_ADMIN_PASSWORD = '<local-only>'
+$env:STOCKFLOW_BOOTSTRAP_ADMIN_FIRST_NAME = 'Admin'
+$env:STOCKFLOW_BOOTSTRAP_ADMIN_LAST_NAME = 'StockFlow'
+docker compose -f compose.full-stack.yml config
+docker compose -f compose.full-stack.yml up --build -d
+docker compose -f compose.full-stack.yml ps
 ```
 
-Servicios: PostgreSQL, StockFlow API en `:8080` y frontend en `:3000`.
+Servicios: PostgreSQL con healthcheck, StockFlow API en `:8080` con healthcheck y frontend en `:3000`. El build usa por defecto `VITE_API_URL=http://localhost:8080` y CORS permite `http://localhost:3000`.
 
 ## Conexión y decisiones
 
@@ -112,5 +125,5 @@ Axios central usa `VITE_API_URL`, adjunta el token desde storage encapsulado y c
 
 - Lazy loading por módulo, sin fragmentar componentes pequeños.
 - Sin refresh token, proxy permanente ni reglas de negocio duplicadas.
-- Los E2E quedan para un entorno efímero con CORS y datos semilla controlados.
-- Futuro: refresh token cuando exista contrato, devoluciones/reversiones, capturas reales y despliegue automatizado.
+- Los E2E de escritura requieren el entorno full-stack efímero y datos aislados; no se ejecutan contra una base compartida.
+- Futuro: refresh token cuando exista contrato, devoluciones/reversiones y despliegue automatizado.
