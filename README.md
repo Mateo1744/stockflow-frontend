@@ -11,6 +11,24 @@ proveedores, clientes, usuarios, movimientos de inventario,
 entradas, salidas y ventas, con autenticación JWT y control
 de acceso basado en roles.
 
+### 🔑 Acceso de demostración
+
+¿Quieres explorar StockFlow sin registrarte? Utiliza la siguiente cuenta pública:
+
+**[Abrir aplicación](https://stockflow-frontend-sigma.vercel.app/login)**
+
+| Campo | Credencial |
+|---|---|
+| **Correo** | `demo.seller@example.com` |
+| **Contraseña** | `Demo12345*` |
+| **Rol** | `SELLER` |
+
+La cuenta permite explorar los productos, consultar clientes y probar el flujo de ventas. Las funciones administrativas y de gestión de inventario están restringidas según el rol.
+
+**Importante:** los datos son ficticios y compartidos entre los visitantes. Las operaciones realizadas con esta cuenta pueden modificar la información visible en la demostración.
+
+> **Nota:** el backend utiliza el plan gratuito de Render. El primer inicio de sesión puede tardar mientras el servidor se reactiva.
+
 ### Arquitectura en producción
 
 | Componente | Tecnología | Despliegue |
