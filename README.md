@@ -1,14 +1,68 @@
 # StockFlow Frontend
 
-Aplicación SaaS administrativa para operar StockFlow de extremo a extremo: autenticación por roles, catálogos, inventario trazable, entradas, salidas, ventas, dashboard y reportes. Este repositorio contiene el cliente web; la API Spring Boot es la autoridad de seguridad y negocio.
+## Demo en vivo
+
+**StockFlow es un sistema full-stack de gestión de inventario y ventas**, desarrollado como proyecto de portafolio de ingeniería de software.
+
+🌐 **[Abrir aplicación web](https://stockflow-frontend-sigma.vercel.app/login)**
+
+La aplicación permite administrar productos, categorías,
+proveedores, clientes, usuarios, movimientos de inventario,
+entradas, salidas y ventas, con autenticación JWT y control
+de acceso basado en roles.
+
+### Arquitectura en producción
+
+| Componente | Tecnología | Despliegue |
+|---|---|---|
+| Frontend | React, TypeScript, Vite | Vercel |
+| Backend | Java 21, Spring Boot | Render |
+| Base de datos | PostgreSQL | Neon |
+| Autenticación | Spring Security, JWT | Backend |
+| Migraciones | Flyway | PostgreSQL |
+
+### Repositorios
+
+- [Frontend — React y TypeScript](https://github.com/Mateo1744/stockflow-frontend)
+- [Backend — Spring Boot](https://github.com/Mateo1744/stockflow-api)
+
+### Características destacadas
+
+- Gestión de inventario con movimientos trazables.
+- Flujo completo de entradas, salidas y ventas.
+- Control de stock y alertas de existencias bajas.
+- Dashboard y reportes basados en datos reales.
+- Autenticación JWT y autorización por roles.
+- Formularios validados, filtros, paginación y ordenamiento.
+- Interfaz responsive con soporte para tema oscuro.
+- Pruebas automatizadas y despliegue mediante GitHub.
+
+> **Nota:** El backend utiliza un servicio gratuito de Render
+> que puede necesitar hasta unos 90 segundos para iniciar después de un periodo de inactividad.
+> El acceso a la aplicación requiere una cuenta autorizada.
+
+Todos los nombres, productos, clientes y operaciones visibles en la demo son ficticios. La interfaz presenta los importes en **USD** como convención de demostración; el backend conserva valores decimales y no implementa conversión de divisas ni un sistema multimoneda.
 
 ## Backend
 
 El backend oficial es [Mateo1744/stockflow-api](https://github.com/Mateo1744/stockflow-api). Su URL se configura en build time mediante `VITE_API_URL`.
 
-## Capturas
+## Capturas de pantalla
 
-La guía para capturas reales está en [`docs/screenshots`](docs/screenshots/README.md). No se incluyen mockups presentados como datos reales.
+### Dashboard
+![Dashboard de StockFlow](docs/screenshots/dashboard.png)
+
+### Gestión de productos
+![Catálogo de productos](docs/screenshots/productos.png)
+
+### Inventario
+![Control de inventario](docs/screenshots/inventario.png)
+
+### Gestión de ventas
+![Ventas y estados](docs/screenshots/ventas.png)
+
+### Reportes
+![Indicadores y reportes](docs/screenshots/reportes.png)
 
 ## Stack
 
@@ -23,7 +77,7 @@ La guía para capturas reales está en [`docs/screenshots`](docs/screenshots/REA
 
 - Login JWT, sesión persistida, logout, guards y autorización por rol.
 - Perfil seguro derivado de la sesión, sin exponer token ni credenciales.
-- CRUD de productos, categorías, proveedores, clientes y usuarios.
+- Gestión de productos, categorías, proveedores, clientes y usuarios según el rol; las eliminaciones disponibles son desactivaciones lógicas para conservar el historial.
 - Inventario de solo lectura y trazabilidad de movimientos.
 - Entradas y salidas con borrador, confirmación y cancelación.
 - Ventas pendientes, completadas o canceladas; la API determina precios y stock.
@@ -32,9 +86,9 @@ La guía para capturas reales está en [`docs/screenshots`](docs/screenshots/REA
 
 ## Roles
 
-- `ADMIN`: operación y reportes completos.
-- `INVENTORY_MANAGER`: catálogos de inventario, proveedores, existencias, movimientos, entradas/salidas y lectura de ventas.
-- `SELLER`: productos/categorías, clientes, ventas y reporte de ventas.
+- `ADMIN`: administración completa, usuarios y todos los reportes.
+- `INVENTORY_MANAGER`: gestión de productos, categorías y proveedores; inventario, movimientos, entradas/salidas, reportes de inventario y lectura de ventas.
+- `SELLER`: lectura de productos/categorías, gestión de clientes y ventas, y reporte de ventas.
 
 La interfaz aplica permisos en rutas y acciones, pero cada petición sigue siendo validada por la API.
 
@@ -68,7 +122,7 @@ npm run test
 npx vite build --configLoader native
 ```
 
-El loader nativo se recomienda en Windows cuando Vite devuelve `spawn EPERM`. GitHub Actions ejecuta instalación reproducible, TypeScript, lint, tests y build.
+El loader nativo se recomienda en Windows cuando Vite devuelve `spawn EPERM`. GitHub Actions ejecuta instalación reproducible, TypeScript, lint, tests y build. La suite verificada contiene **41 tests**.
 
 ## Arquitectura
 

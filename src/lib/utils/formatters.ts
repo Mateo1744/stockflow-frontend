@@ -1,4 +1,4 @@
-const currency = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' })
+const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 const date = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium' })
 const dateTime = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
 export const formatCurrency = (value: number) => currency.format(value)
